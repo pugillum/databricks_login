@@ -1,0 +1,38 @@
+name: Demo pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  connect:
+    name: Connect to Databricks
+    runs-on: ubuntu-latest
+    env:
+      SUBSCRIPTION_ID: "[YOUR SUBSCRIPTION ID]"
+      RESOURCE_GROUP: "[YOUR RESOURCE GROUP NAME]"
+      DATABRICKS_WORKSPACE: "[YOUR DATABRICKS WORKSPACE NAME]"
+
+    steps:
+      - name: "Set up Python 3.7"
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: "Install dependencies"
+        run: |
+          pip3 install databricks-cli
+
+      - name: "Service Principal Login"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.SP_CREDENTIALS }}
+
+      - name: "Setup Databricks CLI"
+        run: |
+          bash dist/databricks_cli_config.sh ${{ env.SUBSCRIPTION_ID }} \
+          ${{ env.RESOURCE_GROUP }} ${{ env.DATABRICKS_WORKSPACE }}
+
+      - name: "Test Databricks CLI"
+        run: databricks fs ls
