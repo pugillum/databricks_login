@@ -1,7 +1,7 @@
 # databricks_login
 
 This shows how to login and use databricks CLI from a Github Actions pipeline
-and requesting a token for a service principal (rather than using a PAT)
+and request a token for a service principal (rather than using a PAT)
 
 ## Requirements
 - a Databricks workspace
