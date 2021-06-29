@@ -1,0 +1,50 @@
+{
+	"name": "{{ environ('JOB_NAME') }}",
+	"new_cluster": {
+		"spark_version": "7.4.x-scala2.12",
+		"spark_conf": {
+			"spark.driver.maxResultSize": "200g",
+			"spark.databricks.delta.preview.enabled": "true",
+			"spark.databricks.delta.properties.defaults.autoOptimize.autoCompact": "true",
+            "spark.databricks.delta.properties.defaults.autoOptimize.optimizeWrite": "true",
+			"spark.databricks.io.cache.enabled": "true",
+			"spark.sql.legacy.timeParserPolicy": "LEGACY"
+
+		},
+		"autoscale" : {
+            "min_workers": 2,
+            "max_workers": 50
+        },
+        "node_type_id": "Standard_DS3_v2",
+		"custom_tags": {
+			"Team": "BLA",
+		},
+		"cluster_log_conf": {
+			"dbfs": {
+				"destination": "{{ environ('LOG_PATH') }}"
+			}
+		}
+	},
+	"email_notifications": {
+        "on_start": [],
+        "on_success": [],
+        "on_failure": [ {{ environ('ALERT_EMAILS') }}]
+    },
+    "libraries": [{
+	    "whl": "{{ environ('WHL_PATH') }}"
+	}],
+    "max_retries": 1,
+	{% if environ('JOB_SCHEDULE') != "-1" %}
+    "schedule": {
+        "quartz_cron_expression": "{{ environ('JOB_SCHEDULE') }}",
+        "timezone_id": "Europe/Amsterdam"
+    },
+	{% endif %}
+	"spark_python_task": {
+		"python_file": "{{ environ('JOB_FILE_PATH') }}",
+        "parameters": [
+            "--config",
+            "{{ environ('CONFIG_PATH') }}"
+        ]
+	}
+}

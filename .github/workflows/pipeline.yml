@@ -3,7 +3,7 @@ name: Demo pipeline
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   connect:
